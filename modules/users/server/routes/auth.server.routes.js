@@ -19,5 +19,4 @@ module.exports = function (app) {
 
   // TODO: Set Routes for other roles and merge common routes together for all roles
 
-  app.route('api/welcome').get(welcome.welcome);
 };
