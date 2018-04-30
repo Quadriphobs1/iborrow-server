@@ -4,7 +4,8 @@ const _ = require('lodash'),
   config = require('../config'),
   chalk = require('chalk'),
   fs = require('fs'),
-  winston = require('winston');
+  winston = require('winston'),
+  path = require('path');
 
 // list of valid formats for the logging
 const validFormats = ['combined', 'common', 'dev', 'short', 'tiny'];
@@ -32,12 +33,13 @@ const logger = winston.createLogger({
  * file logging transport (if available)
  */
 logger.getMorganOptions = function getMorganOptions() {
-
+  // create a write stream (in append mode)
+  var accessLogStream = fs.createWriteStream(path.join(config.log.fileLogger.directoryPath, config.log.fileLogger.fileName), {flags: 'a'})
   return {
-    stream: logger.stream
+    stream: accessLogStream
   };
 
-};
+}; 
 
 /**
  * The format to use with the logger
