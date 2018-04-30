@@ -1,20 +1,40 @@
 {
   "name": "iborrow-server",
   "version": "1.0.0",
+  "iborrow-version": "1.0.0",
   "description": "Server for iborrow application",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/app.js",
+    "start": "nodemon server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Quadri Adekunle (abiodunquadriadekunle@gmail.com)",
   "license": "ISC",
   "dependencies": {
+    "acl": "^0.4.11",
+    "async": "^2.1.4",
     "body-parser": "^1.18.2",
+    "chalk": "^2.4.1",
+    "connect-mongo": "^2.0.1",
+    "cookie-parser": "^1.4.3",
     "cors": "^2.8.4",
-    "express": "^4.16.2",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "generate-password": "^1.4.0",
+    "glob": "^7.1.2",
+    "jsonwebtoken": "^8.2.1",
+    "lodash": "^4.17.10",
+    "method-override": "^2.3.10",
+    "mongoose": "^5.0.16",
     "morgan": "^1.9.0",
-    "nodemon": "^1.14.12"
+    "multer": "^1.3.0",
+    "nodemailer": "^4.6.4",
+    "nodemon": "^1.14.12",
+    "owasp-password-strength-test": "^1.3.0",
+    "passport": "^0.4.0",
+    "passport-jwt": "^4.0.0",
+    "validator": "^9.4.1",
+    "winston": "^3.0.0-rc5"
   }
 }
