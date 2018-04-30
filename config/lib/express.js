@@ -6,6 +6,7 @@
 var config = require('../config'),
   express = require('express'),
   morgan = require('morgan'),
+  logger = require('./logger'),
   bodyParser = require('body-parser'),
   methodOverride = require('method-override'),
   cookieParser = require('cookie-parser'),
@@ -40,6 +41,10 @@ module.exports.initLocalVariables = function (app) {
  */
 module.exports.initMiddleware = function (app) {
 
+  // Enable logger (morgan) if enabled in the configuration file
+  if (_.has(config, 'log.format')) {
+    app.use(morgan(logger.getLogFormat(), logger.getMorganOptions()));
+  }
   // Request body parsing middleware should be above methodOverride
   app.use(bodyParser.urlencoded({
     extended: true
