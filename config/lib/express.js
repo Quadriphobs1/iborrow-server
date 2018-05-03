@@ -11,6 +11,8 @@ var config = require('../config'),
   methodOverride = require('method-override'),
   cookieParser = require('cookie-parser'),
   path = require('path'),
+  cors = require('cors'),
+  hbs = require('express-hbs'),
   _ = require('lodash');
 
 /**
@@ -49,6 +51,7 @@ module.exports.initMiddleware = function (app) {
   app.use(bodyParser.urlencoded({
     extended: true
   }));
+  app.use(cors());
   app.use(bodyParser.json());
   app.use(methodOverride());
 
@@ -56,6 +59,16 @@ module.exports.initMiddleware = function (app) {
   app.use(cookieParser());
 };
 
+/**
+ * Configure view engine
+ */
+module.exports.initViewEngine = function (app) {
+  app.engine('server.view.html', hbs.express4({
+    extname: '.server.view.html'
+  }));
+  app.set('view engine', 'server.view.html');
+  app.set('views', path.resolve('./'));
+};
 
 
 /**
@@ -116,6 +129,9 @@ module.exports.init = function (db) {
 
   // Initialize Express middleware
   this.initMiddleware(app);
+
+  // Initialize Express view engine
+  this.initViewEngine(app);
 
   // Initialize Modules configuration
   this.initModulesConfiguration(app);

@@ -45,6 +45,9 @@ module.exports = {
   // configuration setting for mailer in production mode
   mailer: {
     from: process.env.MAILER_FROM || 'Sprngo',
+    apiKey: process.env.MAILGUN_API_KEY || 'key-eb24c1c94ab9dcb7165c7bb0cf9a7eee',
+    domain: process.env.MAILGUN_DOMAIN || 'messagecentre.sqtdemo.com.ng',
+    emailFrom: process.env.EMAIL_FROM || 'messagecenter@sqtdemo.com.ng',
     options: {
       service: process.env.MAILER_SERVICE_PROVIDER || 'MAILER_SERVICE_PROVIDER',
       auth: {

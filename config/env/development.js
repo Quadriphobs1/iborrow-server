@@ -9,6 +9,7 @@ module.exports = {
   app: {
     title: defaultEnvConfig.app.title + ' - Development Environment'
   },
+  client: 'http://localhost:8070',
   log: {
     // logging with Morgan - https://github.com/expressjs/morgan
     // Can specify one of 'combined', 'common', 'dev', 'short', 'tiny'
@@ -23,6 +24,9 @@ module.exports = {
   },
   mailer: {
     from: process.env.MAILER_FROM || 'iBorrow',
+    apiKey: process.env.MAILGUN_API_KEY || 'key-eb24c1c94ab9dcb7165c7bb0cf9a7eee',
+    domain: process.env.MAILGUN_DOMAIN || 'messagecentre.sqtdemo.com.ng',
+    emailFrom: process.env.EMAIL_FROM || 'John from iBorrow Team <messagecenter@sqtdemo.com.ng>',
     options: {
       service: process.env.MAILER_SERVICE_PROVIDER || 'MAILER_SERVICE_PROVIDER',
       auth: {
@@ -37,3 +41,4 @@ module.exports = {
     expiringTime: process.env.JWT_EXPIRING_TIME || '60 * 60 * 24 * 7'
   }
 };
+ 
