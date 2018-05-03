@@ -18,6 +18,7 @@ module.exports = function (app) {
   app.route('/api/auth/validate/email').post(users.email);
   app.route('/api/auth/validate/username').post(users.username);
   app.route('/api/auth/check/:userId').get(registerUser.userInformation);
+  // Login route for the user
   app.route('/api/auth/signin').post(users.signin);
   // Log the user out of the application, this works for all user levels
   app.route('/api/auth/signout').get(users.signout);

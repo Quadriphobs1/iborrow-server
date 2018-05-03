@@ -19,20 +19,20 @@ const whitelistedFields = ['firstName', 'lastName', 'email', 'username'];
 /**
  * Send User
  */
-exports.me = function (req, res) {
-  const safeUserObject = null;
+exports.me = function (req, res, user) {
+  // Init Variables
+  var safeUserObject = null;
   if (req.user) {
     safeUserObject = {
-      displayName: validator.escape(req.user.displayName),
-      username: validator.escape(req.user.username),
-      created: req.user.created.toString(),
-      roles: req.user.roles,
+      displayName: req.user.displayName,
+      username: req.user.username,
+      roles: req.user.roles[0],
       profileImageURL: req.user.profileImageURL,
-      email: validator.escape(req.user.email),
-      lastName: validator.escape(req.user.lastName),
-      firstName: validator.escape(req.user.firstName),
+      email: req.user.email,
+      lastName: req.user.lastName,
+      firstName: req.user.firstName,
+      verified: req.user.verified
     };
   }
-
   res.json(safeUserObject || null);
 };

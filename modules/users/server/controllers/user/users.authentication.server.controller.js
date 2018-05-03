@@ -207,17 +207,17 @@ exports.signin = function (req, res, next) {
       if (err) return errorHandler.getErrorMessage(err);
       if (!user) {
         return res.status(503).send({ 
-          message: 'Invalid parameters provided. No user found (' + (new Date()).toLocaleTimeString() + ')'
+          message: 'Invalid parameters provided. No user found with the provided parameter'
         })
       }
       if (user && !user.authenticate(password)) {
         return res.status(403).send({
-          message: 'Invalid parameters provided. Password does not match (' + (new Date()).toLocaleTimeString() + ')'
+          message: 'Invalid parameters provided. Password does not match'
         })
       }
       if (!user || !user.authenticate(password)) {
         return res.status(403).send({ 
-          message: 'Invalid username or password (' + (new Date()).toLocaleTimeString() + ')'
+          message: 'Invalid username or password'
         })
       }
       var payload = {id: user.id};
@@ -227,9 +227,9 @@ exports.signin = function (req, res, next) {
         expiresIn: expiredTime
       });
       res.json({
-        message: 'Logged in successfully (' + (new Date()).toLocaleTimeString() + ')',
-        user: user,
-        token: token
+        message: 'Logged in successfully',
+        token: token,
+        roles: user.roles[0] 
       });
     });
 };
