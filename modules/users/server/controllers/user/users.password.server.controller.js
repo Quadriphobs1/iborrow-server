@@ -106,23 +106,26 @@ exports.forgot = function (req, res, next) {
 /**
  * Reset password GET from email token
  */
-exports.validateResetToken = function (req, res) {
+exports.validateResetToken = function (req, res, next) {
   User.findOne({
     resetPasswordToken: req.params.token,
     resetPasswordExpires: {
       $gt: Date.now()
     }
-  }, function (err, user) {
-    if (err || !user) {
-      return res.status(400).send({
-        message: 'Invalid token, please try again'
+  }).exec((err, user) => {
+    if (err) return errorHandler.getErrorMessage(err);
+    if (user) {
+      return res.send({
+        message: 'Valid token'
       });
     }
-
-    res.send({
-      message: 'Valid token'
+    // return if the token does not exist or expires
+    res.status(400).send({
+      message: 'Invalid token, please try again'
     });
+
   });
+  
 };
 
 /**
