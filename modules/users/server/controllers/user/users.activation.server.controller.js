@@ -80,14 +80,9 @@ exports.resendCode = (req, res, next) => {
     },
     /* prepare the email to be sent to the user with the token needed token */
     function(verification, user, done) {
-      var httpTransport = 'http://';
-      if (config.secure && config.secure.ssl === true) {
-        httpTransport = 'https://';
-      }
       var clientUrl = config.client;
       res.render(path.resolve('modules/users/server/templates/resend-verification-token-email'), {
         name: user.firstName,
-        appName: config.app.title,
         token: verification.token,
         url: clientUrl
       }, function (err, emailHTML) {
@@ -206,10 +201,6 @@ exports.activateAccount = (req, res, next) => {
     // TODO: Save a notification to the database for the user
     // prepare to send user a welcome message
     function(user, done) {
-      var httpTransport = 'http://';
-      if (config.secure && config.secure.ssl === true) {
-        httpTransport = 'https://';
-      }
       var loginUrl = `${config.client}/auth`;
       res.render(path.resolve('modules/users/server/templates/welcome-user-email'), {
         name: user.firstName,

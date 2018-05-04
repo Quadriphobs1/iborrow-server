@@ -3,16 +3,18 @@
 /**
  * Module dependencies
  */
-var path = require('path'),
+const path = require('path'),
   config = require(path.resolve('./config/config')),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
   mongoose = require('mongoose'),
   User = mongoose.model('User'),
-  nodemailer = require('nodemailer'),
+  Mailgun = require('mailgun-js'),
   async = require('async'),
   crypto = require('crypto');
 
-var smtpTransport = nodemailer.createTransport(config.mailer.options);
+const apiKey = config.mailer.apiKey;
+const domain = config.mailer.domain;
+const from_who = config.mailer.emailFrom;
 
 /**
  * Forgot for reset password (forgot POST)
@@ -26,19 +28,15 @@ exports.forgot = function (req, res, next) {
         done(err, token);
       });
     },
-    // Lookup user by username
+    // Lookup user by email
     function (token, done) {
-      if (req.body.username) {
+      if (req.body.email) {
         User.findOne({
-          username: req.body.username.toLowerCase()
+          email: req.body.email.toLowerCase()
         }, '-salt -password', function (err, user) {
           if (err || !user) {
             return res.status(400).send({
-              message: 'No account with that username has been found'
-            });
-          } else if (user.provider !== 'local') {
-            return res.status(400).send({
-              message: 'It seems like you signed up using your ' + user.provider + ' account'
+              message: 'No account with that email has been found'
             });
           } else {
             user.resetPasswordToken = token;
@@ -46,50 +44,56 @@ exports.forgot = function (req, res, next) {
 
             user.save(function (err) {
               done(err, token, user);
-            });
+            }); 
           }
         });
       } else {
         return res.status(422).send({
-          message: 'Username field must not be blank'
+          message: 'Email field must not be blank'
         });
       }
     },
+    // prepare the email template
     function (token, user, done) {
-
-      var httpTransport = 'http://';
-      if (config.secure && config.secure.ssl === true) {
-        httpTransport = 'https://';
-      }
-      var baseUrl = config.domain || httpTransport + req.headers.host;
+      var resetUrl = `${config.client}/auth/password/reset/${token}`
       res.render(path.resolve('modules/users/server/templates/reset-password-email'), {
-        name: user.displayName,
-        appName: config.app.title,
-        url: baseUrl + '/api/auth/reset/' + token
+        name: user.firstName,
+        url: resetUrl
       }, function (err, emailHTML) {
         done(err, emailHTML, user);
       });
     },
     // If valid email, send reset email using service
     function (emailHTML, user, done) {
-      var mailOptions = {
-        to: user.email,
-        from: config.mailer.from,
-        subject: 'Password Reset',
-        html: emailHTML
-      };
-      smtpTransport.sendMail(mailOptions, function (err) {
-        if (!err) {
-          res.send({
-            message: 'An email has been sent to the provided email with further instructions.'
-          });
-        } else {
-          return res.status(400).send({
-            message: 'Failure sending email'
-          });
-        }
+      const mailgun = new Mailgun({apiKey: apiKey, domain: domain});
+      const filenameone = path.resolve('./public/email/logo_100px.png');
+      const twitter = path.resolve('./public/email/twitter.png');
+      const facebook = path.resolve('./public/email/facebook.png');
+      const linkedin = path.resolve('./public/email/linkedin.png');
+      const instagram = path.resolve('./public/email/instagram.png');
 
-        done(err);
+      const data = {
+        //Specify email data
+          from: from_who,
+        //The email to contact
+          to: user.email,
+        //Subject and text data  
+          subject: 'Your password reset link',
+          html: emailHTML,
+          inline: [filenameone, twitter, facebook, linkedin, instagram]
+        }
+  
+      //Invokes the method to send emails given the above data with the helper library
+      mailgun.messages().send(data, function (err, body) {
+          if (!err) {
+            res.send({
+              message: 'Password reset instructioon has been sent to your email address.'
+            });
+          } else {
+            return res.status(400).send({
+              message: 'Failure sending email, try again'
+            });
+          }
       });
     }
   ], function (err) {
@@ -110,10 +114,14 @@ exports.validateResetToken = function (req, res) {
     }
   }, function (err, user) {
     if (err || !user) {
-      return res.redirect('/password/reset/invalid');
+      return res.status(400).send({
+        message: 'Invalid token, please try again'
+      });
     }
 
-    res.redirect('/password/reset/' + req.params.token);
+    res.send({
+      message: 'Valid token'
+    });
   });
 };
 
@@ -128,6 +136,7 @@ exports.reset = function (req, res, next) {
 
     function (done) {
       User.findOne({
+        email: req.body.email,
         resetPasswordToken: req.params.token,
         resetPasswordExpires: {
           $gt: Date.now()
@@ -145,19 +154,7 @@ exports.reset = function (req, res, next) {
                   message: errorHandler.getErrorMessage(err)
                 });
               } else {
-                req.login(user, function (err) {
-                  if (err) {
-                    res.status(400).send(err);
-                  } else {
-                    // Remove sensitive data before return authenticated user
-                    user.password = undefined;
-                    user.salt = undefined;
-
-                    res.json(user);
-
-                    done(err, user);
-                  }
-                });
+                done(err, user);
               }
             });
           } else {
@@ -173,24 +170,45 @@ exports.reset = function (req, res, next) {
       });
     },
     function (user, done) {
+      var resetUrl = `${config.client}/auth`
       res.render('modules/users/server/templates/reset-password-confirm-email', {
-        name: user.displayName,
-        appName: config.app.title
+        name: user.firstName,
+        url: resetUrl
       }, function (err, emailHTML) {
         done(err, emailHTML, user);
       });
     },
     // If valid email, send reset email using service
     function (emailHTML, user, done) {
-      var mailOptions = {
-        to: user.email,
-        from: config.mailer.from,
-        subject: 'Your password has been changed',
-        html: emailHTML
-      };
+      const mailgun = new Mailgun({apiKey: apiKey, domain: domain});
+      const filenameone = path.resolve('./public/email/logo_100px.png');
+      const twitter = path.resolve('./public/email/twitter.png');
+      const facebook = path.resolve('./public/email/facebook.png');
+      const linkedin = path.resolve('./public/email/linkedin.png');
+      const instagram = path.resolve('./public/email/instagram.png');
 
-      smtpTransport.sendMail(mailOptions, function (err) {
-        done(err, 'done');
+      const data = {
+        //Specify email data
+          from: from_who,
+        //The email to contact
+          to: user.email,
+        //Subject and text data  
+          subject: 'Your password has been changed',
+          html: emailHTML,
+          inline: [filenameone, twitter, facebook, linkedin, instagram]
+        }
+  
+      //Invokes the method to send emails given the above data with the helper library
+      mailgun.messages().send(data, function (err, body) {
+          if (!err) {
+            res.send({
+              message: 'Your password has been successfully changed, you can now proceed to login with your new password'
+            });
+          } else {
+            return res.status(400).send({
+              message: 'Failure sending email, try again'
+            });
+          }
       });
     }
   ], function (err) {
