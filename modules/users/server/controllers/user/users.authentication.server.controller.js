@@ -63,7 +63,7 @@ exports.signup = function (req, res, next) {
         const verification = new Verification({
           userId: userID,
           token: generatedToken,
-          tokenExpires: Date.now() + 7200000
+          tokenExpires: Date.now() + 7200000 
         });
         verification.save(function (err) {
           if (err) {

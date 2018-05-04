@@ -10,8 +10,13 @@ module.exports = function (app) {
     passport.authenticate('jwt', { session: true }) (req, res, next);
   });
   // Setting up the users profile api
-  app.route('/api/users/me').get(passport.authenticate('jwt', { session: true }), users.me);
+  app.route('/api/users/me').get(users.me);
 
+  // Activating user account here
+  app.route('/api/users/activate/checkcode').post(users.checkActivationCode);
+  app.route('/api/users/activate').post(users.activateAccount);
+  app.route('/api/users/activate/resendcode').get(users.resendCode);
+  
 
 };
  
