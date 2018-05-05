@@ -51,10 +51,11 @@ module.exports.initMiddleware = function (app) {
   app.use(bodyParser.urlencoded({
     extended: true
   }));
+
   app.use(cors());
   app.use(bodyParser.json());
   app.use(methodOverride());
-
+  app.use(express.static(path.resolve('public')));
   // Add the cookie parser middleware
   app.use(cookieParser());
 };
