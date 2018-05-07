@@ -51,14 +51,12 @@ var validateUsername = function(username) {
  * User Schema
  */
 var UserSchema = new Schema({
-  // TODO: capitalize firstname before insert into the db
   firstName: {
     type: String,
     trim: true,
     required: [true,'Please provide your firstname'],
     validate: [validateLocalStrategyProperty, 'Please fill in your first name']
   },
-  // TODO: capitalize the lastName before insert into the database
   lastName: {
     type: String,
     trim: true,
@@ -87,6 +85,15 @@ var UserSchema = new Schema({
     validate: [validateUsername, 'Please enter a valid username: 3+ characters long, non restricted word, characters "_-.", no consecutive dots, does not begin or end with dots, letters a-z and numbers 0-9.'],
     lowercase: true,
     trim: true
+  },
+  phoneNumber: {
+    type: String,
+  },
+  state: {
+    type: String,
+  },
+  region: {
+    type: String
   },
   password: {
     type: String,
@@ -123,6 +130,11 @@ var UserSchema = new Schema({
   },
   /* For email account verification */
   verified: {
+    type: Boolean,
+    default: false
+  },
+  /* For Phone number verification */
+  verifiedPhone: {
     type: Boolean,
     default: false
   }
