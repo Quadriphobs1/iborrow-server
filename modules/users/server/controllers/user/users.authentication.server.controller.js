@@ -58,41 +58,37 @@ exports.signup = function (req, res, next) {
       },
       /* Create a verification token for the user and save it into the database */
       function(user, done){
-        const generatedToken = randomToken(6);
-        const userID = user._id;
-        const verification = new Verification({
-          userId: userID,
-          token: generatedToken,
-          tokenExpires: Date.now() + 7200000 
-        });
-        verification.save(function (err) {
+        const generatedToken = randomToken(20);
+        // Update the user document with the token records
+        user.emailVerificationToken = generatedToken;
+        user.save(function (err) {
           if (err) {
             return res.status(422).send({
               message: errorHandler.getErrorMessage(err)
             });
           } else {
-            done(err, verification, user);
+            done(err, user);
           }
         });
       },
       /* prepare the email to be sent to the user with the  token needed token */
-      function(verification, user, done) {
+      function(user, done) {
         var httpTransport = 'http://';
         if (config.secure && config.secure.ssl === true) {
           httpTransport = 'https://';
         }
         var clientUrl = config.client;
+        var verifyUrl = `${config.client}/auth/register/confirm/${user.emailVerificationToken}`
         res.render(path.resolve('modules/users/server/templates/verification-token-email'), {
           name: user.firstName,
-          appName: config.app.title,
-          token: verification.token,
-          url: clientUrl
+          url: clientUrl,
+          verifyUrl: verifyUrl
         }, function (err, emailHTML) {
           done(err, emailHTML, user);
         });
       }, 
       /* function to sent the email to the user account */
-      function (emailHTML, user, verification, done){
+      function (emailHTML, user, done){
         var mailgun = new Mailgun({apiKey: apiKey, domain: domain});
         const filenameone = path.resolve('./public/email/logo_100px.png')
         const twitter = path.resolve('./public/email/twitter.png')
@@ -114,7 +110,7 @@ exports.signup = function (req, res, next) {
         mailgun.messages().send(data, function (err, body) {
             if (!err) {
               res.send({
-                message: 'An email has been sent to the provided email with further instructions.',
+                message: 'A confirmation email has been sent to the email address used during registration',
                 user: user
               });
             } else {

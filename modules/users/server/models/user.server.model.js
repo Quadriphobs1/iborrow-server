@@ -89,6 +89,12 @@ var UserSchema = new Schema({
   phoneNumber: {
     type: String,
   },
+  address: {
+    type: String
+  },
+  dob: {
+    type: Date
+  },
   state: {
     type: String,
   },
@@ -132,6 +138,12 @@ var UserSchema = new Schema({
   verified: {
     type: Boolean,
     default: false
+  },
+  emailVerificationToken: {
+    type: String
+  },
+  emailVerificationtokenExpires: {
+    Type: Date
   },
   /* For Phone number verification */
   verifiedPhone: {

@@ -12,9 +12,11 @@ module.exports = function (app) {
   // Setting up the users profile api
   app.route('/api/users/me').get(users.me);
 
+  app.route('/api/user/personalinfo/save').post(users.personalinfo);
+
+  
   // Activating user account here
-  app.route('/api/users/activate/checkcode').post(users.checkActivationCode);
-  app.route('/api/users/activate').post(users.activateAccount);
+  app.route('/api/users/activate').post(users.checkActivationCode);
   app.route('/api/users/activate/resendcode').get(users.resendCode);
   
 

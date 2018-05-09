@@ -9,6 +9,7 @@ const _ = require('lodash'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller')),
   mongoose = require('mongoose'),
   multer = require('multer'),
+  async = require('async'),
   config = require(path.resolve('./config/config')),
   User = mongoose.model('User'),
   validator = require('validator');
@@ -35,10 +36,55 @@ exports.me = function (req, res, user) {
       contactInformation: {
         verifiedPhone: req.user.verifiedPhone,
         phoneNumber: req.user.phoneNumber,
-        state: req.user.state,
+        personalInformation: {
+          address: req.user.address,
+          dob: req.user.dob,
+          state: req.user.state
+        },
         region: req.user.region
       }
     };
   }
   res.json(safeUserObject || null);
 };
+
+exports.personalinfo = (req, res, next) => {
+  let user = req.user
+  if (user) {
+    let personalinfo = req.body
+
+    let birth = new Date(personalinfo.date);
+    let now = new Date();
+    let beforeBirth = ((() => {birth.setDate(now.getDate());birth.setMonth(now.getMonth()); return birth.getTime()})() < birth.getTime()) ? 0 : 1;
+    let age = now.getFullYear() - birth.getFullYear() - beforeBirth;
+    if (age > 18) {
+      user.address = personalinfo.address
+      user.state = personalinfo.state
+      user.dob = personalinfo.date
+
+      user.save(function (err) {
+        if (err) {
+          return res.status(422).send({
+            message: errorHandler.getErrorMessage(err)
+          });
+        }
+        return res.send({
+          message: 'Information saved successfully'
+        });
+      });
+    } else {
+
+      return res.json({
+        valid: false,
+        message: 'Age must be greater than 18'
+      });
+    }
+  } else {
+
+    return res.status(401).send({
+      message: 'User is not logged in'
+    })
+  }
+
+
+}
