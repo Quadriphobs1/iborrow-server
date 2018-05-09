@@ -19,33 +19,31 @@ const from_who = config.mailer.emailFrom;
 
 /**
  * Check is the activation token is still valid, if yes, activate the account.
- * @param {*} req 
- * @param {*} res 
+ * @param {*} req
+ * @param {*} res
  */
-exports.checkActivationCode = (req, res) => {
+exports.checkActivationToken = (req, res, next) => {
     const token = req.body.token;
     async.waterfall([
       // check if the token is valid or not
       function (done) {
         User.findOne({
-          emailVerificationToken: token,
-          verified: false
+          emailVerificationToken: token
         }).exec((err, user) => {
           if (err) return errorHandler.getErrorMessage(err);
-      
-          // check if verification exist 
+          // check if verification exist
           if (user) {
             done(err, user);
-          } 
-          // send response if the code cannot be found or has expires
-          res.status(422).json({
-            valid: false,
-            message: 'Confirmation code is invalid or has expired. Click resend code above to get new code'
-          })
-          
+          } else {
+            // send response if the code cannot be found or has expires
+            return res.status(422).json({
+              valid: false,
+              message: 'Confirmation code is invalid or has expired. Click resend code above to get new code'
+            })
+          }
         })
       },
-      // activate the user account 
+      // activate the user account
       function(user, done) {
         user.verified = true;
         user.emailVerificationToken = undefined;
@@ -70,7 +68,7 @@ exports.checkActivationCode = (req, res) => {
         }, function (err, emailHTML) {
           done(err, emailHTML, user);
         });
-      }, 
+      },
       // send welcome email to the user here
       function (emailHTML, user, done) {
         var mailgun = new Mailgun({apiKey: apiKey, domain: domain});
@@ -87,7 +85,7 @@ exports.checkActivationCode = (req, res) => {
           from: from_who,
         //The email to contact
           to: user.email,
-        //Subject and text data  
+        //Subject and text data
           subject: 'Welcome to iBorrow',
           html: emailHTML,
           inline: [filenameone, icon1, icon2, icon3, twitter, facebook, linkedin, instagram]
@@ -96,7 +94,7 @@ exports.checkActivationCode = (req, res) => {
         //Invokes the method to send emails given the above data with the helper library
         mailgun.messages().send(data, function (err, body) {
             if (!err) {
-              res.send({
+              return res.send({
                 message: 'You account is now active'
               });
             } else {
@@ -111,14 +109,14 @@ exports.checkActivationCode = (req, res) => {
         return next(err);
       }
     });
-    
-    
+
+
   };
 
 /**
  * Resend the confirmation code to the user
- * @param {user, header} req 
- * @param { status } res 
+ * @param {user, header} req
+ * @param { status } res
  * @param {} next
  */
 // TODO: Reconfigure the resent token page
@@ -134,7 +132,7 @@ exports.resendCode = (req, res, next) => {
       const verification = new Verification({
         userId: userID,
         token: generatedToken,
-        tokenExpires: Date.now() + 7200000 
+        tokenExpires: Date.now() + 7200000
       });
       verification.save(function (err) {
         if (err) {
@@ -156,7 +154,7 @@ exports.resendCode = (req, res, next) => {
       }, function (err, emailHTML) {
         done(err, emailHTML, user);
       });
-    }, 
+    },
     /* function to sent the email to the user account */
     function (emailHTML, user, verification, done){
       var mailgun = new Mailgun({apiKey: apiKey, domain: domain});
@@ -170,7 +168,7 @@ exports.resendCode = (req, res, next) => {
         from: from_who,
       //The email to contact
         to: user.email,
-      //Subject and text data  
+      //Subject and text data
         subject: 'Your new verification token',
         html: emailHTML,
         inline: [filenameone, twitter, facebook, linkedin, instagram]

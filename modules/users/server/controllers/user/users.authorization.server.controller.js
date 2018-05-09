@@ -11,15 +11,9 @@ var _ = require('lodash'),
 
 
 exports.userInformation = function(req, res, next) {
-  const id = req.params.userId;
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).send({
-      message: 'User is invalid'
-    });
-  }
-
+  const email = req.params.email;
   User.findOne({
-    _id: id
+    email: email
   }).exec(function (err, user) {
     if (err) {
       return res.status(422).send({

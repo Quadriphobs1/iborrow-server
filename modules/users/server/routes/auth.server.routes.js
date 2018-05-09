@@ -17,7 +17,9 @@ module.exports = function (app) {
   app.route('/api/auth/signup/:accountType').post(users.signup);
   app.route('/api/auth/validate/email').post(users.email);
   app.route('/api/auth/validate/username').post(users.username);
-  app.route('/api/auth/check/:userId').get(registerUser.userInformation);
+  app.route('/api/auth/check/:email').get(registerUser.userInformation);
+  // activate the user account here
+  app.route('/api/auth/activate').post(users.checkActivationToken);
   // Login route for the user
   app.route('/api/auth/signin').post(users.signin);
   // Log the user out of the application, this works for all user levels
@@ -30,4 +32,6 @@ module.exports = function (app) {
   //testing if the app is working in route
   app.route('/api/welcome').get(welcome.welcome);
   app.route('/api/email/:mail').get(welcome.testemail);
+
+  
 };
