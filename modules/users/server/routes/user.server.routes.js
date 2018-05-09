@@ -11,7 +11,9 @@ module.exports = function (app) {
   });
   // Setting up the users profile api
   app.route('/api/users/me').get(users.me);
-
+  // Update the onboard status for the user
+  // I know this might not be the best option but for now this what ive got and you just have to work
+  app.route('/api/user/onboard/update').post(users.onboardUpdate);
   app.route('/api/user/personalinfo/save').post(users.personalinfo);
 
 

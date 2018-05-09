@@ -50,6 +50,27 @@ exports.me = function (req, res, user) {
   res.json(safeUserObject || null);
 };
 
+exports.onboardUpdate = (req, res, next) => {
+  let user = req.user;
+  if(user) {
+    user.onboardStatus = true;
+    user.save(function (err) {
+      if (err) {
+        return res.status(422).send({
+          message: errorHandler.getErrorMessage(err)
+        });
+      }
+      return res.send({
+        message: 'Onboard Updated Successfully'
+      });
+    });
+  } else {
+    return res.status(401).send({
+      message: 'User is not logged in'
+    })
+  }
+}
+
 exports.personalinfo = (req, res, next) => {
   let user = req.user
   if (user) {
