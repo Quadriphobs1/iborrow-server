@@ -88,18 +88,27 @@ var UserSchema = new Schema({
   },
   phoneNumber: {
     type: String,
+    required:  [true,'Please provide your phone number'],
+    validate: [validateLocalStrategyProperty, 'Please fill in your phone number']
   },
   address: {
     type: String
   },
   dob: {
-    type: Date
+    type: Date,
+    required:  [true,'Please provide your date of birth'],
+    validate: [validateLocalStrategyProperty, 'Please fill in your date of birth']
   },
   state: {
+    type: String
+  },
+  city: {
     type: String,
   },
   region: {
-    type: String
+    type: String,
+    required:  [true,'You forgot to select your region'],
+    validate: [validateLocalStrategyProperty, 'You forgot to select your region']
   },
   password: {
     type: String,

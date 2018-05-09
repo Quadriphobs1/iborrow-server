@@ -33,16 +33,17 @@ exports.me = function (req, res, user) {
       lastName: req.user.lastName,
       firstName: req.user.firstName,
       verified: req.user.verified,
+      region: req.user.region,
       contactInformation: {
         verifiedPhone: req.user.verifiedPhone,
-        phoneNumber: req.user.phoneNumber,
-        personalInformation: {
-          address: req.user.address,
-          dob: req.user.dob,
-          state: req.user.state
-        },
-        region: req.user.region
-      }
+        phoneNumber: req.user.phoneNumber        
+      },
+      otherInformation: {
+        address: req.user.address,
+        dob: req.user.dob,
+        state: req.user.state,
+        city: req.user.city
+      },
     };
   }
   res.json(safeUserObject || null);
