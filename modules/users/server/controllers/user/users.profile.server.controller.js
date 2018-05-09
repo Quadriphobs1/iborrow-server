@@ -55,7 +55,7 @@ exports.personalinfo = (req, res, next) => {
     let personalinfo = req.body
 
     let birth = new Date(personalinfo.date);
-    let now = new Date();
+    let now = new Date(); 
     let beforeBirth = ((() => {birth.setDate(now.getDate());birth.setMonth(now.getMonth()); return birth.getTime()})() < birth.getTime()) ? 0 : 1;
     let age = now.getFullYear() - birth.getFullYear() - beforeBirth;
     if (age > 18) {
@@ -75,7 +75,7 @@ exports.personalinfo = (req, res, next) => {
       });
     } else {
 
-      return res.json({
+      return res.status(422).json({
         valid: false,
         message: 'Age must be greater than 18'
       });

@@ -42,23 +42,37 @@ exports.signup = function (req, res, next) {
         */
         // For security measurement we remove the roles from the req.body object
         // Init user and add missing fields
-        const user = new User(req.body);
-        user.displayName = user.firstName + ' ' + user.lastName;
-        user.roles  = accountType;
-        // Then save the user
-        user.save(function (err) {
-          if (err) {
-            return res.status(422).send({
-              message: errorHandler.getErrorMessage(err)
-            });
-          } else {
-            done(err, user);
-          }
-        });
+        let birth = new Date(req.body.dateOfBirth);
+        let now = new Date(); 
+        let beforeBirth = ((() => {birth.setDate(now.getDate());birth.setMonth(now.getMonth()); return birth.getTime()})() < birth.getTime()) ? 0 : 1;
+        let age = now.getFullYear() - birth.getFullYear() - beforeBirth;
+        if (age > 18) {
+          const user = new User(req.body);
+          user.displayName = user.firstName + ' ' + user.lastName;
+          user.roles  = accountType;
+          user.dob = req.body.dateOfBirth
+          // Then save the user
+          user.save(function (err) {
+            if (err) {
+              return res.status(422).send({
+                message: errorHandler.getErrorMessage(err)
+              });
+            } else {
+              done(err, user);
+            }
+          });
+        } else {
+    
+          return res.status(422).json({
+            valid: false,
+            message: 'Age must be greater than 18.'
+          });
+        }
+        
       },
       /* Create a verification token for the user and save it into the database */
       function(user, done){
-        const generatedToken = randomToken(20);
+        const generatedToken = randomToken(40);
         // Update the user document with the token records
         user.emailVerificationToken = generatedToken;
         user.save(function (err) {
