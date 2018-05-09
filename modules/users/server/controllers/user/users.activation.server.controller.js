@@ -120,37 +120,51 @@ exports.checkActivationToken = (req, res, next) => {
  * @param {} next
  */
 // TODO: Reconfigure the resent token page
-exports.resendCode = (req, res, next) => {
+exports.resendActivationToken = (req, res, next) => {
   // Asyncronous waterfall function to run each function after the success of another
   async.waterfall([
     /**
-     * create a new token for the user and save the token to the database
+     * Check if the user exis
      */
     function(done) {
-      const generatedToken = randomToken(6);
-      const userID = req.user._id;
-      const verification = new Verification({
-        userId: userID,
-        token: generatedToken,
-        tokenExpires: Date.now() + 7200000
+      const id = req.body.id
+      User.findOne({
+        _id: id
+      }).exec((err, user) => {
+        if (err) return errorHandler.getErrorMessage(err);
+        // check if verification exist
+        if (user) {
+          done(err, user);
+        } else {
+          return res.status(422).json({
+            valid: false,
+            message: 'Error with your parameters, No user found with the information'
+          });
+        };
       });
-      verification.save(function (err) {
+    },
+    /* Generate a new random token for the user again */
+    function(user, done) {
+      const generatedToken = randomToken(40);
+      user.emailVerificationToken = generatedToken;
+      user.save(function (err) {
         if (err) {
           return res.status(422).send({
             message: errorHandler.getErrorMessage(err)
           });
         } else {
-          done(err, verification, req.user);
+          done(err, user);
         }
       });
     },
     /* prepare the email to be sent to the user with the token needed token */
-    function(verification, user, done) {
+    function(user, done) {
       var clientUrl = config.client;
+      var verifyUrl = `${config.client}/auth/register/confirm/${user.emailVerificationToken}`
       res.render(path.resolve('modules/users/server/templates/resend-verification-token-email'), {
         name: user.firstName,
-        token: verification.token,
-        url: clientUrl
+        url: clientUrl,
+        verifyUrl: verifyUrl
       }, function (err, emailHTML) {
         done(err, emailHTML, user);
       });
@@ -169,7 +183,7 @@ exports.resendCode = (req, res, next) => {
       //The email to contact
         to: user.email,
       //Subject and text data
-        subject: 'Your new verification token',
+        subject: 'Your new confirmation link',
         html: emailHTML,
         inline: [filenameone, twitter, facebook, linkedin, instagram]
       }
@@ -178,7 +192,7 @@ exports.resendCode = (req, res, next) => {
       mailgun.messages().send(data, function (err, body) {
           if (!err) {
             res.send({
-              message: 'Your new verification code has been sent, check your email for confirmation'
+              message: 'Your new confimation link has been sent, check your email now'
             });
           } else {
             return res.status(400).send({

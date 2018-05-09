@@ -20,6 +20,7 @@ module.exports = function (app) {
   app.route('/api/auth/check/:email').get(registerUser.userInformation);
   // activate the user account here
   app.route('/api/auth/activate').post(users.checkActivationToken);
+  app.route('/api/auth/resendToken').post(users.resendActivationToken);
   // Login route for the user
   app.route('/api/auth/signin').post(users.signin);
   // Log the user out of the application, this works for all user levels

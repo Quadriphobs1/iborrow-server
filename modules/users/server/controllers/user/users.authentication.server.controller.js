@@ -115,7 +115,7 @@ exports.signup = function (req, res, next) {
         //The email to contact
           to: user.email,
         //Subject and text data  
-          subject: 'Your verification token',
+          subject: 'Your Confirmation Link',
           html: emailHTML,
           inline: [filenameone, twitter, facebook, linkedin, instagram]
         }
@@ -228,6 +228,13 @@ exports.signin = function (req, res, next) {
       if (!user || !user.authenticate(password)) {
         return res.status(403).send({ 
           message: 'Invalid username or password'
+        })
+      }
+
+      if(user && !user.verified) {
+        return res.status(403).send({
+          'verified': true,
+          'id': user._id
         })
       }
       var payload = {id: user.id};
