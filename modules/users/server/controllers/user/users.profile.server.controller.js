@@ -44,6 +44,7 @@ exports.me = function (req, res, user) {
         state: req.user.state,
         city: req.user.city
       },
+      onboardStatus: req.user.onboardStatus
     };
   }
   res.json(safeUserObject || null);

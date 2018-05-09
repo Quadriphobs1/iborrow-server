@@ -158,6 +158,10 @@ var UserSchema = new Schema({
   verifiedPhone: {
     type: Boolean,
     default: false
+  },
+  onboardStatus: {
+    type: Boolean,
+    default: false
   }
 });
 

@@ -246,7 +246,8 @@ exports.signin = function (req, res, next) {
       res.json({
         message: 'Logged in successfully',
         token: token,
-        roles: user.roles[0] 
+        roles: user.roles[0],
+        onboard: user.onboardStatus
       });
     });
 };
