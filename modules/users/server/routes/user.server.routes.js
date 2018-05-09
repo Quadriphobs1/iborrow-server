@@ -14,7 +14,7 @@ module.exports = function (app) {
 
   app.route('/api/user/personalinfo/save').post(users.personalinfo);
 
-  
+   
   // Activating user account here
   app.route('/api/users/activate').post(users.checkActivationCode);
   app.route('/api/users/activate/resendcode').get(users.resendCode);
