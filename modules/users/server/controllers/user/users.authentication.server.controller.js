@@ -49,6 +49,7 @@ exports.signup = function (req, res, next) {
         if (age > 18) {
           const user = new User(req.body);
           user.displayName = user.firstName + ' ' + user.lastName;
+          user.shortName = `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
           user.roles  = accountType;
           user.dob = req.body.dateOfBirth
           // Then save the user

@@ -13,6 +13,7 @@ module.exports = _.extend(
   require('./user/users.authorization.server.controller'),
   require('./user/users.activation.server.controller'),
   require('./user/users.password.server.controller'),
-  require('./user/users.profile.server.controller')
+  require('./user/users.profile.server.controller'),
+  require('./user/users.members.server.controller')
 );
  

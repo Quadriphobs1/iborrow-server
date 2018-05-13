@@ -67,6 +67,11 @@ var UserSchema = new Schema({
     type: String,
     trim: true
   },
+  shortName: {
+    type: String,
+    trim: true,
+    uppercase: true
+  },
   email: {
     type: String,
     index: {
