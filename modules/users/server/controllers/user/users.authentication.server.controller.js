@@ -40,7 +40,6 @@ exports.signup = function (req, res, next) {
         * password
         * roles
         */
-        // For security measurement we remove the roles from the req.body object
         // Init user and add missing fields
         let birth = new Date(req.body.dateOfBirth);
         let now = new Date(); 

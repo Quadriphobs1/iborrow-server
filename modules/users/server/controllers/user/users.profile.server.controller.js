@@ -14,13 +14,13 @@ const _ = require('lodash'),
   User = mongoose.model('User'),
   validator = require('validator');
 
-const whitelistedFields = ['firstName', 'lastName', 'email', 'username'];
+const whitelistedFields = ['firstName', 'lastName', 'phoneNumber', 'region', 'dob', 'shorname', 'state', 'city', 'address'];
 
 
 /**
  * Send User
  */
-exports.me = function (req, res, user) {
+exports.me = (req, res, user) => {
   // Init Variables
   var safeUserObject = null;
   if (req.user) {
@@ -36,7 +36,7 @@ exports.me = function (req, res, user) {
       region: req.user.region,
       contactInformation: {
         verifiedPhone: req.user.verifiedPhone,
-        phoneNumber: req.user.phoneNumber        
+        phoneNumber: req.user.phoneNumber
       },
       otherInformation: {
         address: req.user.address,
@@ -71,43 +71,48 @@ exports.onboardUpdate = (req, res, next) => {
   }
 }
 
-exports.personalinfo = (req, res, next) => {
-  let user = req.user
-  if (user) {
-    let personalinfo = req.body
+exports.update = (req, res, next) => {
+  // Init Variables
+  var user = req.user;
 
-    let birth = new Date(personalinfo.date);
+  if (user) {
+    let birth = new Date(req.body.dateOfBirth);
     let now = new Date(); 
     let beforeBirth = ((() => {birth.setDate(now.getDate());birth.setMonth(now.getMonth()); return birth.getTime()})() < birth.getTime()) ? 0 : 1;
     let age = now.getFullYear() - birth.getFullYear() - beforeBirth;
-    if (age > 18) {
-      user.address = personalinfo.address
-      user.state = personalinfo.state
-      user.dob = personalinfo.date
 
-      user.save(function (err) {
+    if (age > 18) {
+      // Update whitelisted fields only
+      user = _.extend(user, _.pick(req.body, whitelistedFields));
+
+      user.updated = Date.now();
+      user.displayName = user.firstName + ' ' + user.lastName;
+      user.shortName = `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
+      user.dob = req.body.dateOfBirth
+
+      user.save((err) => {
         if (err) {
           return res.status(422).send({
             message: errorHandler.getErrorMessage(err)
           });
+        } else {
+          res.send({
+            message: 'Profile update saved successfully'
+          });
         }
-        return res.send({
-          message: 'Information saved successfully'
-        });
       });
+     
     } else {
 
       return res.status(422).json({
         valid: false,
-        message: 'Age must be greater than 18'
+        message: 'Age must be greater than 18.'
       });
     }
+
   } else {
-
-    return res.status(401).send({
-      message: 'User is not logged in'
-    })
+    res.status(401).send({
+      message: 'User session expired, Please login again'
+    });
   }
-
-
 }

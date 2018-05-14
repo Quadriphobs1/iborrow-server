@@ -23,7 +23,7 @@ exports.members = (req, res, next) => {
     }
 
     let userType = req.params.users // The type of user to fetch
-    let perPage = 10 // The number to return per each request
+    let perPage = 20 // The number to return per each request
     let page = parseInt(req.params.page) || 1 // The page that we are currently on if not exist make it 1
     let nextPage = null // Add an increment to the current page for the next page
 
