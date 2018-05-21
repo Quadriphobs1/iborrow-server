@@ -129,7 +129,7 @@ var UserSchema = new Schema({
   roles: {
     type: [{
       type: String,
-      enum: ['user','investors', 'borrowers', 'admin', 'staffs']
+      enum: ['user','investors', 'borrowers', 'admin', 'moderator', 'editor']
     }],
     default: ['user'],
     required: 'Please provide at least one role'
@@ -272,5 +272,7 @@ UserSchema.statics.generateRandomPassphrase = function () {
     }
   });
 };
+
+
 
 mongoose.model('User', UserSchema);

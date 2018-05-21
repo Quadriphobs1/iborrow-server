@@ -16,4 +16,3 @@ module.exports = _.extend(
   require('./user/users.profile.server.controller'),
   require('./user/users.members.server.controller')
 );
- 

@@ -31,7 +31,7 @@ exports.signup = function (req, res, next) {
     async.waterfall([
       /* Register the user into the datbase first */
       function(done){
-        /* 
+        /*
         * DATA STRUTURE:
         * firstName
         * LastName
@@ -42,7 +42,7 @@ exports.signup = function (req, res, next) {
         */
         // Init user and add missing fields
         let birth = new Date(req.body.dateOfBirth);
-        let now = new Date(); 
+        let now = new Date();
         let beforeBirth = ((() => {birth.setDate(now.getDate());birth.setMonth(now.getMonth()); return birth.getTime()})() < birth.getTime()) ? 0 : 1;
         let age = now.getFullYear() - birth.getFullYear() - beforeBirth;
         if (age > 18) {
@@ -62,13 +62,13 @@ exports.signup = function (req, res, next) {
             }
           });
         } else {
-    
+
           return res.status(422).json({
             valid: false,
             message: 'Age must be greater than 18.'
           });
         }
-        
+
       },
       /* Create a verification token for the user and save it into the database */
       function(user, done){
@@ -100,7 +100,7 @@ exports.signup = function (req, res, next) {
         }, function (err, emailHTML) {
           done(err, emailHTML, user);
         });
-      }, 
+      },
       /* function to sent the email to the user account */
       function (emailHTML, user, done){
         var mailgun = new Mailgun({apiKey: apiKey, domain: domain});
@@ -114,12 +114,12 @@ exports.signup = function (req, res, next) {
           from: from_who,
         //The email to contact
           to: user.email,
-        //Subject and text data  
+        //Subject and text data
           subject: 'Your Confirmation Link',
           html: emailHTML,
           inline: [filenameone, twitter, facebook, linkedin, instagram]
         }
-  
+
         //Invokes the method to send emails given the above data with the helper library
         mailgun.messages().send(data, function (err, body) {
             if (!err) {
@@ -139,15 +139,15 @@ exports.signup = function (req, res, next) {
           return next(err);
         }
     });
-    
-    
+
+
   }else {
     return res.status(400).send({
       message: 'Failed to identify account type'
     });
   }
-  
-  
+
+
 };
 
 /**
@@ -216,7 +216,7 @@ exports.signin = function (req, res, next) {
     }, function (err, user) {
       if (err) return errorHandler.getErrorMessage(err);
       if (!user) {
-        return res.status(503).send({ 
+        return res.status(401).send({
           message: 'Invalid parameters provided. No user found with the provided parameter'
         })
       }
@@ -226,7 +226,7 @@ exports.signin = function (req, res, next) {
         })
       }
       if (!user || !user.authenticate(password)) {
-        return res.status(403).send({ 
+        return res.status(403).send({
           message: 'Invalid username or password'
         })
       }
