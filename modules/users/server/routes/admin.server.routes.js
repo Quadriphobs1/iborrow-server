@@ -13,4 +13,6 @@ module.exports = function (app) {
   app.route('/api/admin/create')
     .post(users.regAdmin);
 
+  // sub admins route
+  app.route('/api/admin/user').post(users.addAdmins)
 };

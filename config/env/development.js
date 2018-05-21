@@ -9,7 +9,9 @@ module.exports = {
   app: {
     title: defaultEnvConfig.app.title + ' - Development Environment'
   },
-  client: 'http://localhost:8081',
+  client: 'http://localhost:9010',
+  admin: 'http://localhost:9040',
+  website: 'http://localhost:9020',
   log: {
     // logging with Morgan - https://github.com/expressjs/morgan
     // Can specify one of 'combined', 'common', 'dev', 'short', 'tiny'
@@ -18,7 +20,7 @@ module.exports = {
       directoryPath: process.cwd(),
       fileName: 'app.log',
       maxsize: 10485760,
-      maxFiles: 2, 
+      maxFiles: 2,
       json: false
     }
   },
@@ -41,4 +43,3 @@ module.exports = {
     expiringTime: process.env.JWT_EXPIRING_TIME || '60 * 60 * 24 * 7'
   }
 };
- 
