@@ -33,17 +33,6 @@ exports.me = (req, res, user) => {
       lastName: req.user.lastName,
       firstName: req.user.firstName,
       verified: req.user.verified,
-      region: req.user.region,
-      contactInformation: {
-        verifiedPhone: req.user.verifiedPhone,
-        phoneNumber: req.user.phoneNumber
-      },
-      otherInformation: {
-        address: req.user.address,
-        dob: req.user.dob,
-        state: req.user.state,
-        city: req.user.city
-      },
       onboardStatus: req.user.onboardStatus
     };
   }
@@ -74,10 +63,10 @@ exports.onboardUpdate = (req, res, next) => {
 exports.update = (req, res, next) => {
   // Init Variables
   var user = req.user;
-
+  // TODO: Update when the user tries to up profile here to use population methodd
   if (user) {
     let birth = new Date(req.body.dateOfBirth);
-    let now = new Date(); 
+    let now = new Date();
     let beforeBirth = ((() => {birth.setDate(now.getDate());birth.setMonth(now.getMonth()); return birth.getTime()})() < birth.getTime()) ? 0 : 1;
     let age = now.getFullYear() - birth.getFullYear() - beforeBirth;
 
@@ -101,7 +90,7 @@ exports.update = (req, res, next) => {
           });
         }
       });
-     
+
     } else {
 
       return res.status(422).json({

@@ -10,6 +10,7 @@ const path = require('path'),
   passport = require('passport'),
   Mailgun = require('mailgun-js'),
   User = mongoose.model('User'),
+  UserInformation = mongoose.model('UserInformation'),
   Verification = mongoose.model('Verification'),
   config = require(path.resolve('./config/config')),
   async = require('async'),
@@ -50,7 +51,7 @@ exports.signup = function (req, res, next) {
           user.displayName = user.firstName + ' ' + user.lastName;
           user.shortName = `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
           user.roles  = accountType;
-          user.dob = req.body.dateOfBirth
+
           // Then save the user
           user.save(function (err) {
             if (err) {
@@ -58,7 +59,18 @@ exports.signup = function (req, res, next) {
                 message: errorHandler.getErrorMessage(err)
               });
             } else {
-              done(err, user);
+              let userInformation = new UserInformation(req.body);
+              userInformation.user = user._id
+              userInformation.dob = req.body.dateOfBirth;
+              userInformation.save(function (err) {
+                if(err) return res.status(422).send({
+                    message: errorHandler.getErrorMessage(err)
+                  });
+
+                done(err, user);
+              })
+              user.userInformation.push(userInformation);
+              user.save()
             }
           });
         } else {
@@ -141,7 +153,7 @@ exports.signup = function (req, res, next) {
     });
 
 
-  }else {
+  } else {
     return res.status(400).send({
       message: 'Failed to identify account type'
     });

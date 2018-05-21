@@ -27,6 +27,8 @@ exports.regAdmin = function(req, res, next) {
       user.displayName = user.firstName + ' ' + user.lastName;
       user.shortName = `${user.firstName.charAt(0)}${user.lastName.charAt(0)}`
       user.roles  = 'admin';
+      user.verified = true
+      user.onboardStatus = true
       user.save(function (err) {
         if (err) {
           return res.status(422).send({
@@ -34,7 +36,7 @@ exports.regAdmin = function(req, res, next) {
           });
         } else {
           res.send({
-            message: 'Account create successfully'
+            message: 'Account created successfully'
           });
         }
       });

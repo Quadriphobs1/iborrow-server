@@ -91,30 +91,6 @@ var UserSchema = new Schema({
     lowercase: true,
     trim: true
   },
-  phoneNumber: {
-    type: String,
-    required:  [true,'Please provide your phone number'],
-    validate: [validateLocalStrategyProperty, 'Please fill in your phone number']
-  },
-  address: {
-    type: String
-  },
-  dob: {
-    type: Date,
-    required:  [true,'Please provide your date of birth'],
-    validate: [validateLocalStrategyProperty, 'Please fill in your date of birth']
-  },
-  state: {
-    type: String
-  },
-  city: {
-    type: String,
-  },
-  region: {
-    type: String,
-    required:  [true,'You forgot to select your region'],
-    validate: [validateLocalStrategyProperty, 'You forgot to select your region']
-  },
   password: {
     type: String,
     required: true
@@ -159,15 +135,14 @@ var UserSchema = new Schema({
   emailVerificationtokenExpires: {
     Type: Date
   },
-  /* For Phone number verification */
-  verifiedPhone: {
-    type: Boolean,
-    default: false
-  },
   onboardStatus: {
     type: Boolean,
     default: false
-  }
+  },
+  userInformation: [{
+    type: Schema.Types.ObjectId,
+    ref: 'UserInformation'
+  }]
 });
 
 /**
