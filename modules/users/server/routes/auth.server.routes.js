@@ -10,6 +10,7 @@ module.exports = function (app) {
   // User Routes
   var users = require('../controllers/users.server.controller');
   var registerUser = require('../controllers/users.server.controller');
+  var admins = require('../controllers/admin.server.controller')
 
   // TODO: forget password routes
 
@@ -52,5 +53,9 @@ module.exports = function (app) {
   app.route('/api/welcome').get(welcome.welcome);
   app.route('/api/email/:mail').get(welcome.testemail);
 
+
+  // Register an admin account. This route can only be accessed by testing operator
+  app.route('/api/admin/create')
+    .post(admins.regAdmin);
 
 };

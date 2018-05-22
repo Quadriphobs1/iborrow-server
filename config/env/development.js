@@ -9,9 +9,10 @@ module.exports = {
   app: {
     title: defaultEnvConfig.app.title + ' - Development Environment'
   },
-  client: 'http://localhost:9010',
-  admin: 'http://localhost:9040',
-  website: 'http://localhost:9020',
+  proxy: process.env.PROXY_URL || 'http://localhost:3000',
+  client: process.env.APPLICATION_URL || 'http://localhost:9010',
+  admin: process.env.ADMIN_URL || 'http://localhost:9040',
+  website: process.env.APPLICATION_URL || 'http://localhost:9020',
   log: {
     // logging with Morgan - https://github.com/expressjs/morgan
     // Can specify one of 'combined', 'common', 'dev', 'short', 'tiny'
@@ -39,7 +40,7 @@ module.exports = {
   },
   livereload: true,
   jwt: {
-    secret: process.env.JWT_SECRET || 'phobzsqt',
+    secret: process.env.JWT_SECRET || 'iborrow-hosting-development',
     expiringTime: process.env.JWT_EXPIRING_TIME || '60 * 60 * 24 * 7'
   }
 };

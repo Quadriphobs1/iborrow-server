@@ -99,8 +99,7 @@ var UserSchema = new Schema({
     type: String
   },
   profileImageURL: {
-    type: String,
-    default: 'uploads/user/profile/default-avatar.jpg'
+    type: String
   },
   roles: {
     type: [{

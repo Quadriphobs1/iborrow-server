@@ -9,7 +9,6 @@ const config = require('../config'),
     chalk = require('chalk');
 
 
-
 // Initialize Models
 mongoose.loadModels();
 

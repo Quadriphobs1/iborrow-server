@@ -4,10 +4,14 @@ var fs = require('fs');
 
 module.exports = {
     port: process.env.PORT || 8443,
+    proxy: process.env.PROXY_URL || 'https://iborrow-server.herokuapp.com',
+    client: process.env.APPLICATION_URL || 'https://iborrow-loan.herokuapp.com',
+    admin: process.env.ADMIN_URL || 'https://iborrow-admin.herokuapp.com',
+    website: process.env.APPLICATION_URL || 'https://iborrow-web.herokuapp.com',
     // Binding to 127.0.0.1 is safer in production.
     host: process.env.HOST || '0.0.0.0',
     db: {
-      uri: process.env.MONGOHQ_URL || process.env.MONGODB_URI || 'mongodb://' + (process.env.DB_1_PORT_27017_TCP_ADDR || 'localhost') + DB_NAME,
+      uri: process.env.MONGOHQ_URL || process.env.MONGODB_URI || 'mongodb://' + (process.env.DB_1_PORT_27017_TCP_ADDR || 'localhost') + process.env.DB_NAME,
       options: {
         user: '',
         pass: ''
@@ -42,21 +46,22 @@ module.exports = {
         json: false
       }
     },
-  // configuration setting for mailer in production mode
-  mailer: {
-    from: process.env.MAILER_FROM || 'Sprngo',
-    apiKey: process.env.MAILGUN_API_KEY || 'key-eb24c1c94ab9dcb7165c7bb0cf9a7eee',
-    domain: process.env.MAILGUN_DOMAIN || 'messagecentre.sqtdemo.com.ng',
-    emailFrom: process.env.EMAIL_FROM || 'messagecenter@sqtdemo.com.ng',
-    options: {
-      service: process.env.MAILER_SERVICE_PROVIDER || 'MAILER_SERVICE_PROVIDER',
-      auth: {
-        user: process.env.MAILER_EMAIL_ID || 'MAILER_EMAIL_ID',
-        pass: process.env.MAILER_PASSWORD || 'MAILER_PASSWORD'
+    // configuration setting for mailer in production mode
+    mailer: {
+      from: process.env.MAILER_FROM || 'iBorrow',
+      apiKey: process.env.MAILGUN_API_KEY || 'key-eb24c1c94ab9dcb7165c7bb0cf9a7eee',
+      domain: process.env.MAILGUN_DOMAIN || 'messagecentre.sqtdemo.com.ng',
+      emailFrom: process.env.EMAIL_FROM || 'John from iBorrow Team <messagecenter@sqtdemo.com.ng>',
+      options: {
+        service: process.env.MAILER_SERVICE_PROVIDER || 'Maingun',
+        auth: {
+          user: process.env.MAILER_EMAIL_ID || 'MAILER_EMAIL_ID',
+          pass: process.env.MAILER_PASSWORD || 'MAILER_PASSWORD'
+        }
       }
+    },
+    jwt: {
+      secret: process.env.JWT_SECRET || 'iborrow-hosting-development',
+      expiringTime: process.env.JWT_EXPIRING_TIME || '60 * 60 * 24 * 7'
     }
-  },
-  jwt: {
-    secret: process.env.JWT_SECRET || 'iborrowsqt'
-  }
 };

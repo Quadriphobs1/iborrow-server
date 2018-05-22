@@ -5,7 +5,6 @@
  */
 const path = require('path')
 const config = require(path.resolve('./config/config'))
-const { ForbiddenError } = require('@casl/ability')
 /**
  * Get unique error field name
  */
@@ -38,12 +37,6 @@ var getUniqueErrorMessage = function (err) {
  */
 exports.getErrorMessage = function (err) {
   var message = '';
-  if (err instanceof ForbiddenError) {
-    return res.status(403).send({
-      status: 'forbidden',
-      message: error.message
-    })
-  }
 
   if (err.code) {
     switch (err.code) {
