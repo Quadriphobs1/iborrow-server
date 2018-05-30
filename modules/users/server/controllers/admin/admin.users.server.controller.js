@@ -18,7 +18,44 @@ exports.listUsers = function (req, res, next) {
         message: errorHandler.getErrorMessage(err)
       });
     }
-
     res.json(users);
   });
 }
+
+exports.deleteUser = function (req, res, next) {
+  var user = req.model;
+  user.remove(function (err) {
+    if (err) {
+      return res.status(422).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    }
+
+    res.send({
+      message: `${user.username} account deleted successfully.`
+    });
+  });
+}
+
+
+/**
+ * User middleware
+ */
+exports.userByID = function (req, res, next, id) {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).send({
+      message: 'User is invalid'
+    });
+  }
+
+  User.findById(id, '--salt -password -verified -onboardStatus').exec(function (err, user) {
+    if (err) {
+      return next(err);
+    } else if (!user) {
+      return next(new Error('Failed to load user ' + id));
+    }
+
+    req.model = user;
+    next();
+  });
+};

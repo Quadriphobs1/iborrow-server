@@ -7,7 +7,7 @@ module.exports = {
     proxy: process.env.PROXY_URL || 'https://iborrow-server.herokuapp.com',
     client: process.env.APPLICATION_URL || 'https://iborrow-loan.herokuapp.com',
     admin: process.env.ADMIN_URL || 'https://iborrow-admin.herokuapp.com',
-    website: process.env.APPLICATION_URL || 'https://iborrow-web.herokuapp.com',
+    website: process.env.WEBSITE_URL || 'https://iborrow-web.herokuapp.com',
     // Binding to 127.0.0.1 is safer in production.
     host: process.env.HOST || '0.0.0.0',
     db: {
