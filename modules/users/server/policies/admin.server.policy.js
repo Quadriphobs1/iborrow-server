@@ -27,16 +27,7 @@ exports.invokeRolesPolicies = function () {
       ]
     },
     {
-      roles: ['editor'],
-      allows: [
-        {
-          resources: '/api/admin/user',
-          permissions: ['get', 'put', 'patch']
-        }
-      ]
-    },
-    {
-      roles: ['moderator', 'consultant'],
+      roles: ['moderator', 'consultant','editor'],
       allows: [
         {
           resources: '/api/admin/user',

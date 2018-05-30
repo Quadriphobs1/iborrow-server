@@ -8,11 +8,15 @@ var path = require('path'),
   User = mongoose.model('User'),
   errorHandler = require(path.resolve('./modules/core/server/controllers/errors.server.controller'));
 
+
+/**
+ * Show all admins to the requesting admin
+ */
 exports.listUsers = function (req, res, next) {
   User.find({
     'roles': { '$in': ['admin', 'editor', 'moderator', 'consultant']},
     '_id': { '$ne': req.user._id }
-  }, '-salt -password -verified -onboardStatus').sort('-created').populate('user', 'displayName').exec(function (err, users) {
+  }, '-__v -salt -password -verified -onboardStatus').sort('-created').populate('user', 'displayName').exec(function (err, users) {
     if (err) {
       return res.status(422).send({
         message: errorHandler.getErrorMessage(err)
@@ -22,6 +26,10 @@ exports.listUsers = function (req, res, next) {
   });
 }
 
+
+/**
+ * Delete a particular user form the list
+ */
 exports.deleteUser = function (req, res, next) {
   var user = req.model;
   user.remove(function (err) {
@@ -35,6 +43,31 @@ exports.deleteUser = function (req, res, next) {
       message: `${user.username} account deleted successfully.`
     });
   });
+}
+
+/**
+ * Count available admins and group the result for display to the user
+ * @return json(users._id.roles)
+ */
+exports.countAdmins = function (req, res, next) {
+  User.aggregate([
+    { "$match": { "roles": { "$in": ['admin', 'editor', 'moderator', 'consultant'] } } }, 
+    {
+      $group : {
+        _id : "$roles",
+        count: { $sum: 1 }
+      }
+    }
+  ], function (err, users) {
+    if (err) {
+      console.log(err)
+      return res.status(422).send({
+        message: errorHandler.getErrorMessage(err)
+      });
+    }
+    res.json(users);
+  });
+
 }
 
 

@@ -13,10 +13,15 @@ module.exports = function (app) {
   app.all('*', function(req, res, next) {
     passport.authenticate('jwt', { session: true }) (req, res, next);
   });
-  // sub admins route
+  // Sub admin route resource
   app.route('/api/admin/user').all(adminPolicy.isAllowed)
     .post(users.addAdmins)
     .get(users.listUsers)
+  
+  /**
+  * Get all available admins and group them with their roles in counted format
+   */
+  app.route('/api/admin/users/count').get(users.countAdmins)
   
   app.route('/api/admin/user/:userID').all(adminPolicy.isAllowed)
     .delete(users.deleteUser)
