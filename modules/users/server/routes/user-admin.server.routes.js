@@ -17,15 +17,16 @@ module.exports = function (app) {
   app.route('/api/admin/user').all(adminPolicy.isAllowed)
     .post(users.addAdmins)
     .get(users.listUsers)
-  
+
   /**
   * Get all available admins and group them with their roles in counted format
    */
   app.route('/api/admin/users/count').get(users.countAdmins)
-  
+
   app.route('/api/admin/user/:userID').all(adminPolicy.isAllowed)
+    .get(users.getUserInfo)
     .delete(users.deleteUser)
-  
+
   // Finish by binding the user middleware
-  app.param('userID', users.userByID); 
+  app.param('userID', users.userByID);
 };

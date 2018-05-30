@@ -32,6 +32,10 @@ exports.invokeRolesPolicies = function () {
         {
           resources: '/api/admin/user',
           permissions: ['get']
+        },
+        {
+          resources: ['/api/admin/user/:userID'],
+          permissions: ['get', 'put', 'patch']
         }
       ]
     }

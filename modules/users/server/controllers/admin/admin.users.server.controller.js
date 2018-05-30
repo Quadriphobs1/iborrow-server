@@ -26,6 +26,15 @@ exports.listUsers = function (req, res, next) {
   });
 }
 
+/**
+ * Get the user information to be displayed
+ * @param {*} req
+ * @param {*} res
+ * @param {*} next
+ */
+exports.getUserInfo = function (req, res, next) {
+  res.json(req.model);
+}
 
 /**
  * Delete a particular user form the list
@@ -51,7 +60,7 @@ exports.deleteUser = function (req, res, next) {
  */
 exports.countAdmins = function (req, res, next) {
   User.aggregate([
-    { "$match": { "roles": { "$in": ['admin', 'editor', 'moderator', 'consultant'] } } }, 
+    { "$match": { "roles": { "$in": ['admin', 'editor', 'moderator', 'consultant'] } } },
     {
       $group : {
         _id : "$roles",
