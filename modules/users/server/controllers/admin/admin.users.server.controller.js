@@ -13,16 +13,39 @@ var path = require('path'),
  * Show all admins to the requesting admin
  */
 exports.listUsers = function (req, res, next) {
+  let perPage = 12 // The number to return per each request
+  let page = parseInt(req.params.page) || 1 // The page that we are currently on if not exist make it 1
+  let nextPage = null // Add an increment to the current page for the next page
   User.find({
     'roles': { '$in': ['admin', 'editor', 'moderator', 'consultant']},
     '_id': { '$ne': req.user._id }
-  }, '-__v -salt -password -verified -onboardStatus').sort('-created').populate('user', 'displayName').exec(function (err, users) {
+  }, '-__v -salt -password -verified -onboardStatus')
+  .sort('-created')
+  .skip((perPage * page) - perPage)
+  .limit(perPage)
+  .populate('user', 'displayName')
+  .exec(function (err, users) {
     if (err) {
       return res.status(422).send({
         message: errorHandler.getErrorMessage(err)
       });
     }
-    res.json(users);
+    User.find({
+      'roles': { '$in': ['admin', 'editor', 'moderator', 'consultant']},
+      '_id': { '$ne': req.user._id }
+    })
+    .count()
+    .exec((err, count) => { // First check the total number of user we can find with out criterion
+      if (err) return errorHandler.getErrorMessage(err)
+      let pages = Math.ceil(count / perPage) // Get the total pages that we might have
+      return res.json({
+          users: users,
+          current: page,
+          pages: pages,
+          total: count
+      })
+
+    })
   });
 }
 

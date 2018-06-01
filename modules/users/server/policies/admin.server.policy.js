@@ -21,6 +21,10 @@ exports.invokeRolesPolicies = function () {
           permissions: '*'
         },
         {
+          resources: ['/api/admin/users/:page([0-9]+)'],
+          permissions: '*'
+        },
+        {
           resources: ['/api/admin/user/:userID'],
           permissions: '*'
         }
@@ -31,6 +35,10 @@ exports.invokeRolesPolicies = function () {
       allows: [
         {
           resources: '/api/admin/user',
+          permissions: ['get']
+        },
+        {
+          resources: ['/api/admin/users/:page([0-9]+)'],
           permissions: ['get']
         },
         {
